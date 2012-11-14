@@ -3,8 +3,10 @@ import readline
 import signal
 import sys
 import curses
+import math
+import time
 
-ser=serial.Serial("/dev/tty.usbmodem641", 9600, timeout=1)
+ser=serial.Serial("/dev/tty.usbmodem411", 9600, timeout=1)
 
 def handleInt(a,b):
     ser.close()
@@ -20,8 +22,23 @@ def cmd(cName, i):
     ser.write(cName)
     ser.write(i)
 
+CMD_RIGHT=0
+CMD_LEFT=1
+CMD_UP=2
+CMD_DOWN=3
+def cmdBytePair(a,b):
+    ser.write(wireInt(a))
+    ser.write(wireInt(b))
+    
 def wireInt(i):
     return chr(int(i))
+
+def cmdVector(d1,s1,d2,s2):
+    ser.write("v")
+    ser.write(wireInt(d1))
+    ser.write(wireInt(s1))
+    ser.write(wireInt(d2))
+    ser.write(wireInt(s2))
 
 def cursesSetup():
     stdscr = curses.initscr()
@@ -52,6 +69,18 @@ if __name__ == "__main__":
         if data == "screen":
             cursesSetup()
             continue
+        elif data == "circle":
+            for i in range(180):
+                cmdBytePair(CMD_RIGHT, 200)
+                vertical = math.sin(math.radians(i))
+                if vertical < 0:
+                    vertical = abs(vertical)
+                    cmdBytePair(CMD_DOWN, vertical)
+                else:
+                    cmdBytePair(CMD_UP, vertical)
+            continue
+        elif data == "vtest":
+            cmdVector(CMD_RIGHT, 40, CMD_DOWN, 70)
         elif len(result) == 2:
             direction = result[0]
             steps = result[1]

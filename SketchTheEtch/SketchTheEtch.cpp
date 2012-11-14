@@ -18,6 +18,32 @@ const int RIGHT_ORDER[] = {8,9,10,11};
 const int LEFT_ORDER[] = {11,10,9,8};
 const int UP_ORDER[] = {4,5,6,7};
 const int DOWN_ORDER[] = {7,6,5,4};
+const int* ALL_DIRS[] = {
+    RIGHT_ORDER,
+    LEFT_ORDER,
+    UP_ORDER,
+    DOWN_ORDER
+};
+
+enum DirectionOrder {
+    kRightOrder = 0,
+    kLeftOrder = 1,
+    kUpOrder = 2,
+    kDownOrder = 3
+};
+
+/**
+ speed = [0, 200]
+ delay = [5, 204]
+ */
+int speedToPause(int speed) {
+    if (speed == 0) {
+        return 0;
+    }
+    else {
+        return 205 - speed;
+    }
+}
 
 void stopHorizontal() {
     for (int i = 0; i < PIN_COUNT; i++) {
@@ -48,40 +74,54 @@ void motorReset() {
     stopAll();
 }
 
-void driveMotor(const int order[], int pause) {
-//    for (int i=0; i<PIN_COUNT; i++) {
-//    }
-    digitalWrite(order[2], LOW);
-    digitalWrite(order[0], HIGH);
-    delay(pause);
-    digitalWrite(order[3], LOW);
-    digitalWrite(order[1], HIGH);
-    delay(pause);
-    digitalWrite(order[0], LOW);
-    digitalWrite(order[2], HIGH);
-    delay(pause);
-    digitalWrite(order[1], LOW);
-    digitalWrite(order[3], HIGH);
-    delay(pause);
+void driveMotor(const int order[], int speed) {
+    int pause = speedToPause(speed);
+    if (pause == 0) {
+        for (int i=0; i<PIN_COUNT; i++) {
+            digitalWrite(order[i], LOW);
+        }
+    }
+    else {
+        int lowIdx = 2;
+        int highIdx = 0;
+        for (int i=0; i<PIN_COUNT; i++) {
+            digitalWrite(order[lowIdx], LOW);
+            digitalWrite(order[highIdx], HIGH);
+            lowIdx++;
+            highIdx++;
+            lowIdx = lowIdx % PIN_COUNT;
+            highIdx = highIdx % PIN_COUNT;
+            delay(pause);
+        }
+    }
 }
+
+typedef void (*DriveFunc)(int);
 
 // 4-7
-void driveDown(int pause=5) {
-    driveMotor(DOWN_ORDER, pause);
+void driveDown(int speed=200) {
+    driveMotor(DOWN_ORDER, speed);
 }
 
-void driveUp(int pause=5) {
-    driveMotor(UP_ORDER, pause);
+void driveUp(int speed=200) {
+    driveMotor(UP_ORDER, speed);
 }
 
 // 8-11
-void driveLeft(int pause=5) {
-    driveMotor(LEFT_ORDER, pause);
+void driveLeft(int speed=200) {
+    driveMotor(LEFT_ORDER, speed);
 }
 
-void driveRight(int pause=5) {
-    driveMotor(RIGHT_ORDER, pause);
+void driveRight(int speed=200) {
+    driveMotor(RIGHT_ORDER, speed);
 }
+
+const DriveFunc DRIVE_FUNC_LOOKUP[] = {
+    driveRight,
+    driveLeft,
+    driveUp,
+    driveDown
+};
 
 int clamp(int value, int lowerBound, int upperBound) {
     if (value < lowerBound) {
@@ -103,13 +143,28 @@ int blockingRead() {
     return result;
 }
 
-int pauseTime = 5;
+int pauseTime = 200;
 void loop() {
     int result = digitalRead(12);
     digitalWrite(13, result);
     if (result == HIGH) {
         int data = Serial.read();
         if (data >= 0) {
+            if (data >= 0 && data <= 3) {
+                const int* dir = ALL_DIRS[data];
+                int pause = speedToPause(blockingRead());
+                if (pause == 0) {
+                    if (data == 0 || data == 1) {
+                        stopHorizontal();
+                    }
+                    else {
+                        stopVertical();
+                    }
+                }
+                else {
+                    driveMotor(dir, pause);
+                }
+            }
             if (data == 'd') {
                 driveDown(pauseTime);
             }
@@ -143,9 +198,83 @@ void loop() {
                     Serial.println("Unknown 'x' command");
                 }
             }
+            else if (data == 'v') {
+                int dir1 = blockingRead();
+                int dir1StepCount = blockingRead();
+                int dir2 = blockingRead();
+                int dir2StepCount = blockingRead();
+                
+                // Make sure the vector includes two directions
+                if ( ((dir1 == kLeftOrder || dir1 == kRightOrder) && (dir2 == kUpOrder || dir2 == kDownOrder)) ||
+                     ((dir2 == kLeftOrder || dir2 == kRightOrder) && (dir1 == kUpOrder || dir1 == kDownOrder))) {
+                    
+                    int maxStepCount = 0;
+                    int minStepCount = 0;
+                    DriveFunc driveMax = NULL;
+                    DriveFunc driveMin = NULL;
+                    if (dir1StepCount > dir2StepCount) {
+                        maxStepCount = dir1StepCount;
+                        minStepCount = dir2StepCount;
+                        driveMax = DRIVE_FUNC_LOOKUP[dir1];
+                        driveMin = DRIVE_FUNC_LOOKUP[dir2];
+                    }
+                    else {
+                        maxStepCount = dir2StepCount;
+                        minStepCount = dir1StepCount;
+                        driveMax = DRIVE_FUNC_LOOKUP[dir2];
+                        driveMin = DRIVE_FUNC_LOOKUP[dir1];
+                    }
+                    
+                    if (minStepCount == 0) {
+                        for (int i=0; i<maxStepCount; i++) {
+                            driveMax(200);
+                        }
+                    }
+                    else { // minStepCount > 0
+                        // Number of sections we want to break the long direction of the line into
+                        // Eg: 10:1 ratio we would break it into two pieces of length 5 with an
+                        // offset of 1
+                        int numLineSections = minStepCount + 1;
+                        
+                        // Approimate segment length
+                        int segmentLength = maxStepCount / numLineSections;
+                        
+                        // Total number of steps in the max direction that are not accounted for with segmentLength
+                        int remainder = maxStepCount % numLineSections;
+                        
+                        // case where it was 1:1 ratio
+                        if (segmentLength == 0) {
+                            segmentLength = 1;
+                            remainder = 0;
+                        }
+                        
+                        int minCounter = numLineSections;
+                        for (int i=0; i<numLineSections; i++) {
+                            if (minCounter <= remainder) {
+                                driveMax(200);
+                            }
+                            for (int j=0; j<segmentLength; j++) {
+                                driveMax(200);
+                            }
+                            driveMin(200);
+                            minCounter -= remainder;
+                            if (minCounter <= 0) {
+                                minCounter += numLineSections;
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
     else {
-        driveRight();
+        for (int i=0; i<50; i++) {
+            driveRight();
+            driveUp();
+        }
+        for (int i=0; i<50; i++) {
+            driveLeft();
+            driveDown();
+        }
     }
 }
