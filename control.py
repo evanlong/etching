@@ -6,7 +6,19 @@ import curses
 import math
 import time
 
-ser=serial.Serial("/dev/tty.usbmodem411", 9600, timeout=1)
+ser=serial.Serial("/dev/tty.usbmodem641", 9600, timeout=1)
+
+def drawPoints(points):
+    result = []
+    for i in range(len(points)-1):
+        p1 = points[i]
+        p2 = points[i+1]
+        h = p2[0] - p1[0]
+        v = p2[1] - p1[1]
+        hCmd = CMD_LEFT if h < 0 else CMD_RIGHT
+        vCmd = CMD_UP if v < 0 else CMD_DOWN
+        cmdVector(hCmd, abs(h)/2, vCmd, abs(v)/2)
+        time.sleep(.1)
 
 def handleInt(a,b):
     ser.close()
@@ -80,7 +92,30 @@ if __name__ == "__main__":
                     cmdBytePair(CMD_UP, vertical)
             continue
         elif data == "vtest":
-            cmdVector(CMD_RIGHT, 40, CMD_DOWN, 70)
+            cmdVector(CMD_LEFT, 60, CMD_UP, 60)
+            time.sleep(1)
+            cmdVector(CMD_LEFT, 20, CMD_UP, 40)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_UP, 40)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_UP, 0)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_DOWN, 20)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_DOWN, 40)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_UP, 40)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_UP, 20)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_UP, 0)
+            time.sleep(1)
+            cmdVector(CMD_RIGHT, 20, CMD_DOWN, 40)
+            time.sleep(1)            
+            cmdVector(CMD_LEFT, 20, CMD_DOWN, 40)
+            time.sleep(1)            
+            cmdVector(CMD_LEFT, 60, CMD_DOWN, 60)
+            time.sleep(1)
         elif len(result) == 2:
             direction = result[0]
             steps = result[1]

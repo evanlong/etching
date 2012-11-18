@@ -204,6 +204,8 @@ void loop() {
                 int dir2 = blockingRead();
                 int dir2StepCount = blockingRead();
                 
+                const int SPEED = 200;
+                
                 // Make sure the vector includes two directions
                 if ( ((dir1 == kLeftOrder || dir1 == kRightOrder) && (dir2 == kUpOrder || dir2 == kDownOrder)) ||
                      ((dir2 == kLeftOrder || dir2 == kRightOrder) && (dir1 == kUpOrder || dir1 == kDownOrder))) {
@@ -227,7 +229,7 @@ void loop() {
                     
                     if (minStepCount == 0) {
                         for (int i=0; i<maxStepCount; i++) {
-                            driveMax(200);
+                            driveMax(SPEED);
                         }
                     }
                     else { // minStepCount > 0
@@ -251,12 +253,12 @@ void loop() {
                         int minCounter = numLineSections;
                         for (int i=0; i<numLineSections; i++) {
                             if (minCounter <= remainder) {
-                                driveMax(200);
+                                driveMax(SPEED);
                             }
                             for (int j=0; j<segmentLength; j++) {
-                                driveMax(200);
+                                driveMax(SPEED);
                             }
-                            driveMin(200);
+                            driveMin(SPEED);
                             minCounter -= remainder;
                             if (minCounter <= 0) {
                                 minCounter += numLineSections;
