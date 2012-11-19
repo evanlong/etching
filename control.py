@@ -6,7 +6,7 @@ import curses
 import math
 import time
 
-ser=serial.Serial("/dev/tty.usbmodem641", 9600, timeout=1)
+ser=serial.Serial("/dev/tty.usbmodem411", 9600, timeout=None)
 
 def drawPoints(points):
     result = []
@@ -18,7 +18,6 @@ def drawPoints(points):
         hCmd = CMD_LEFT if h < 0 else CMD_RIGHT
         vCmd = CMD_UP if v < 0 else CMD_DOWN
         cmdVector(hCmd, abs(h)/2, vCmd, abs(v)/2)
-        time.sleep(.1)
 
 def handleInt(a,b):
     ser.close()
@@ -38,6 +37,7 @@ CMD_RIGHT=0
 CMD_LEFT=1
 CMD_UP=2
 CMD_DOWN=3
+DIR_TO_INDEX = ['r','l','u','d']
 def cmdBytePair(a,b):
     ser.write(wireInt(a))
     ser.write(wireInt(b))
@@ -51,6 +51,11 @@ def cmdVector(d1,s1,d2,s2):
     ser.write(wireInt(s1))
     ser.write(wireInt(d2))
     ser.write(wireInt(s2))
+    while True:
+        x = ser.read()
+        if x == 'x':
+            break
+        time.sleep(.03)
 
 def cursesSetup():
     stdscr = curses.initscr()
@@ -92,30 +97,17 @@ if __name__ == "__main__":
                     cmdBytePair(CMD_UP, vertical)
             continue
         elif data == "vtest":
-            cmdVector(CMD_LEFT, 60, CMD_UP, 60)
-            time.sleep(1)
-            cmdVector(CMD_LEFT, 20, CMD_UP, 40)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_UP, 40)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_UP, 0)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_DOWN, 20)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_DOWN, 40)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_UP, 40)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_UP, 20)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_UP, 0)
-            time.sleep(1)
-            cmdVector(CMD_RIGHT, 20, CMD_DOWN, 40)
-            time.sleep(1)            
-            cmdVector(CMD_LEFT, 20, CMD_DOWN, 40)
-            time.sleep(1)            
-            cmdVector(CMD_LEFT, 60, CMD_DOWN, 60)
-            time.sleep(1)
+            # while True:
+            #     print "begin"
+            #     cmdVector(CMD_RIGHT, 60, CMD_UP, 0)
+            #     cmdVector(CMD_RIGHT, 0, CMD_DOWN, 60)
+            #     cmdVector(CMD_LEFT, 60, CMD_DOWN, 0)
+            #     cmdVector(CMD_RIGHT, 0, CMD_UP, 60)
+            for i in range(100):
+                cmdVector(CMD_RIGHT, 1, CMD_UP, 0)
+                cmdVector(CMD_RIGHT, 0, CMD_UP, 60)
+                cmdVector(CMD_RIGHT, 1, CMD_UP, 0)
+                cmdVector(CMD_RIGHT, 0, CMD_DOWN, 60)
         elif len(result) == 2:
             direction = result[0]
             steps = result[1]
@@ -124,7 +116,9 @@ if __name__ == "__main__":
                 if direction in ["q", "x"]: # commands
                     cmd(direction, wireInt(steps))
                 else: # directions
-                    work(direction, int(steps))
+                    if direction in DIR_TO_INDEX:
+                        idx = DIR_TO_INDEX.index(direction)
+                        cmdVector(idx, int(steps), (idx+2)%len(DIR_TO_INDEX), 0)
                 continue
         elif len(result) == 1:
             good = True

@@ -266,6 +266,8 @@ void loop() {
                         }
                     }
                 }
+                
+                Serial.print('x');
             }
         }
     }
