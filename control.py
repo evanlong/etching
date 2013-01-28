@@ -5,11 +5,37 @@ import sys
 import curses
 import math
 import time
+import logging
 
 ser=serial.Serial("/dev/tty.usbmodem411", 9600, timeout=None)
 
-def drawPoints(points):
+def distance(p1, p2):
+    x = abs(p1[0] - p2[0])
+    y = abs(p1[1] - p2[1])
+    return math.sqrt(x*x + y*y)
+
+def findPointForDist(points, dist):
+    if len(points) == 0: return ([],points[1:])
+
+    p0 = points[0]
+    i = 1
+    while i < len(points):
+        if distance(p0, points[i]) >= dist:
+            return ([p0,points[i]], points[i+1:])
+        i += 1
+
+    return ([p0], points[1:])
+
+def smooth(points):
+    MIN_DIST = 13
     result = []
+    while len(points) > 0:
+        p,points = findPointForDist(points, MIN_DIST)
+        result.extend(p)
+    return result
+
+def drawPoints(points):
+    points = smooth(points)
     for i in range(len(points)-1):
         p1 = points[i]
         p2 = points[i+1]
@@ -17,7 +43,8 @@ def drawPoints(points):
         v = p2[1] - p1[1]
         hCmd = CMD_LEFT if h < 0 else CMD_RIGHT
         vCmd = CMD_UP if v < 0 else CMD_DOWN
-        cmdVector(hCmd, abs(h)/2, vCmd, abs(v)/2)
+        # cmdVector(hCmd, abs(h)/2, vCmd, abs(v)/2)
+        cmdVector(hCmd, abs(h)*.75, vCmd, abs(v)*.75)
 
 def handleInt(a,b):
     ser.close()
@@ -45,7 +72,13 @@ def cmdBytePair(a,b):
 def wireInt(i):
     return chr(int(i))
 
-def cmdVector(d1,s1,d2,s2):
+def isHorDir(d):
+    return d == CMD_RIGHT or d == CMD_LEFT
+
+def isVerDir(d):
+    return d == CMD_UP or d == CMD_DOWN
+
+def _dumbCmdVector(d1,s1,d2,s2):
     ser.write("v")
     ser.write(wireInt(d1))
     ser.write(wireInt(s1))
@@ -56,6 +89,37 @@ def cmdVector(d1,s1,d2,s2):
         if x == 'x':
             break
         time.sleep(.03)
+
+PREV_HOR_DIR = CMD_RIGHT
+PREV_VER_DIR = CMD_DOWN
+def cmdVector(d1,s1,d2,s2):
+    global PREV_HOR_DIR
+    global PREV_VER_DIR
+    dirs = sorted( [[d1,s1], [d2,s2]] )
+    horizontal = dirs[0]
+    vertical = dirs[1]
+
+    if horizontal[0] != PREV_HOR_DIR and horizontal[1] > 0:
+        horizontal[1] += 10
+        PREV_HOR_DIR = horizontal[0]
+
+    if vertical[0] != PREV_VER_DIR and vertical[1] > 0:
+        vertical[1] += 10
+        PREV_VER_DIR = vertical[0]
+
+    _dumbCmdVector(horizontal[0], horizontal[1], vertical[0], vertical[1])
+
+def cmdRight(d):
+    cmdVector(CMD_RIGHT, d, CMD_DOWN, 0)
+
+def cmdLeft(d):
+    cmdVector(CMD_LEFT, d, CMD_DOWN, 0)
+
+def cmdUp(d):
+    cmdVector(CMD_RIGHT, 0, CMD_UP, d)
+
+def cmdDown(d):
+    cmdVector(CMD_LEFT, 0, CMD_DOWN, d)
 
 def cursesSetup():
     stdscr = curses.initscr()
@@ -97,17 +161,58 @@ if __name__ == "__main__":
                     cmdBytePair(CMD_UP, vertical)
             continue
         elif data == "vtest":
+            # # flip 1
+            # cmdRight(150)
+            # cmdDown(50)
+            # cmdLeft(150)
+            # cmdUp(50)
+            # cmdDown(150)
+            # cmdRight(50)
+            # cmdUp(150)
+            # cmdRight(50)
+            # cmdDown(100)
+            # cmdLeft(100)
+            # cmdUp(100)
+
+            # flip 2
+            # cmdLeft(50)
+            # cmdDown(150)
+            # cmdRight(50)
+            # cmdUp(50)
+            # for i in range(10):
+            #     cmdRight(50)
+            #     cmdUp(5)
+            #     cmdLeft(50)
+
+            # for i in range(5):
+            #     cmdRight(100)
+            #     cmdUp(10)
+            #     cmdLeft(100)
+
+
+            for i in range(50):
+                cmdDown(50)
+                cmdUp(50)
+                cmdRight(1)
+                
+
             # while True:
             #     print "begin"
             #     cmdVector(CMD_RIGHT, 60, CMD_UP, 0)
             #     cmdVector(CMD_RIGHT, 0, CMD_DOWN, 60)
             #     cmdVector(CMD_LEFT, 60, CMD_DOWN, 0)
             #     cmdVector(CMD_RIGHT, 0, CMD_UP, 60)
-            for i in range(100):
-                cmdVector(CMD_RIGHT, 1, CMD_UP, 0)
-                cmdVector(CMD_RIGHT, 0, CMD_UP, 60)
-                cmdVector(CMD_RIGHT, 1, CMD_UP, 0)
-                cmdVector(CMD_RIGHT, 0, CMD_DOWN, 60)
+            # curX = 0
+            # curY = 0
+            # for i in range(0,361,2):
+            #     x = math.cos(math.radians(i)) * 5
+            #     y = math.sin(math.radians(i)) * 5
+            #     curX = x - curX
+            #     curY = y - curY
+            #     dirH = CMD_LEFT if curX < 0 else CMD_RIGHT
+            #     dirV = CMD_UP if curY < 0 else CMD_DOWN
+            #     print "x: %d, y: %d" % (curX, curY)
+            #     cmdVector(dirH, abs(curX), dirV, abs(curY))
         elif len(result) == 2:
             direction = result[0]
             steps = result[1]

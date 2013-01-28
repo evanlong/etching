@@ -27,7 +27,7 @@
         CGPoint p = [v CGPointValue];
         [s appendFormat:@"%d,%d\n", (int)p.x, (int)p.y];
     }
-    NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://192.168.1.23:5000/draw"]];
+    NSMutableURLRequest *req = [[NSMutableURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://evlong13inch.local:5000/draw"]];
     req.HTTPMethod = @"POST";
     req.HTTPBody = [s dataUsingEncoding:NSUTF8StringEncoding];
     [NSURLConnection sendAsynchronousRequest:req
