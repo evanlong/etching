@@ -227,9 +227,12 @@ void loop() {
             }
             else if (data == 'v') {
                 int dir1 = blockingRead();
-                int dir1StepCount = blockingRead();
+                int dir1Overflow = blockingRead();
+                int dir1StepCount = (dir1Overflow * 255) + blockingRead();
+                
                 int dir2 = blockingRead();
-                int dir2StepCount = blockingRead();
+                int dir2Overflow = blockingRead();
+                int dir2StepCount = (dir2Overflow * 255) + blockingRead();
                 
                 const int SPEED = 200;
                 

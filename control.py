@@ -7,11 +7,11 @@ import math
 import time
 import logging
 
-ser=serial.Serial("/dev/tty.usbmodem411", 9600, timeout=None)
+ser=serial.Serial("/dev/tty.usbmodem641", 9600, timeout=None)
 
 def distance(p1, p2):
     x = abs(p1[0] - p2[0])
-    y = abs(p1[1] - p2[1])
+    y = abs(p1[1] - p2[1])    
     return math.sqrt(x*x + y*y)
 
 def findPointForDist(points, dist):
@@ -78,12 +78,24 @@ def isHorDir(d):
 def isVerDir(d):
     return d == CMD_UP or d == CMD_DOWN
 
+def _overFlowPair(s):
+    overflow = int(s) / 255
+    rest = int(s) % 255;
+    return (chr(overflow), chr(rest))
+
 def _dumbCmdVector(d1,s1,d2,s2):
     ser.write("v")
+
     ser.write(wireInt(d1))
-    ser.write(wireInt(s1))
+    overflow1, rest1 = _overFlowPair(s1)
+    ser.write(overflow1)
+    ser.write(rest1)
+
     ser.write(wireInt(d2))
-    ser.write(wireInt(s2))
+    overflow2, rest2 = _overFlowPair(s2)
+    ser.write(overflow2)
+    ser.write(rest2)
+    
     while True:
         x = ser.read()
         if x == 'x':
@@ -161,58 +173,13 @@ if __name__ == "__main__":
                     cmdBytePair(CMD_UP, vertical)
             continue
         elif data == "vtest":
-            # # flip 1
-            # cmdRight(150)
-            # cmdDown(50)
-            # cmdLeft(150)
-            # cmdUp(50)
-            # cmdDown(150)
-            # cmdRight(50)
-            # cmdUp(150)
-            # cmdRight(50)
-            # cmdDown(100)
-            # cmdLeft(100)
-            # cmdUp(100)
-
-            # flip 2
-            # cmdLeft(50)
-            # cmdDown(150)
-            # cmdRight(50)
-            # cmdUp(50)
-            # for i in range(10):
-            #     cmdRight(50)
-            #     cmdUp(5)
-            #     cmdLeft(50)
-
-            # for i in range(5):
-            #     cmdRight(100)
-            #     cmdUp(10)
-            #     cmdLeft(100)
-
-
-            for i in range(50):
-                cmdDown(50)
-                cmdUp(50)
-                cmdRight(1)
-                
-
-            # while True:
-            #     print "begin"
-            #     cmdVector(CMD_RIGHT, 60, CMD_UP, 0)
-            #     cmdVector(CMD_RIGHT, 0, CMD_DOWN, 60)
-            #     cmdVector(CMD_LEFT, 60, CMD_DOWN, 0)
-            #     cmdVector(CMD_RIGHT, 0, CMD_UP, 60)
-            # curX = 0
-            # curY = 0
-            # for i in range(0,361,2):
-            #     x = math.cos(math.radians(i)) * 5
-            #     y = math.sin(math.radians(i)) * 5
-            #     curX = x - curX
-            #     curY = y - curY
-            #     dirH = CMD_LEFT if curX < 0 else CMD_RIGHT
-            #     dirV = CMD_UP if curY < 0 else CMD_DOWN
-            #     print "x: %d, y: %d" % (curX, curY)
-            #     cmdVector(dirH, abs(curX), dirV, abs(curY))
+            points = []
+            for offset in range(50):
+                for i in range(0,361,1):
+                    x = math.cos(math.radians(i)) * (100 - offset)
+                    y = math.sin(math.radians(i)) * (100 - offset)
+                    points.append((x,y))
+            drawPoints(points)
         elif len(result) == 2:
             direction = result[0]
             steps = result[1]
