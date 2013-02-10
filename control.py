@@ -8,6 +8,7 @@ import time
 import logging
 
 ser=serial.Serial("/dev/tty.usbmodem641", 9600, timeout=None)
+time.sleep(1)
 
 def distance(p1, p2):
     x = abs(p1[0] - p2[0])

@@ -1,15 +1,15 @@
 from PIL import Image
 import math
-from control import cmdRight, cmdLeft, cmdUp, cmdDown
+from control import *
 
 def distance(p1, p2):
     x = abs(p1[0] - p2[0])
-    y = abs(p1[1] - p2[1])    
+    y = abs(p1[1] - p2[1])
     return math.sqrt(x*x + y*y)
 
 def isBlack(p):
     return p[0] == 0 and p[1] == 0 and p[2] == 0
-        
+
 def gatherBlackPoints(image):
     pixels = image.load()
     width, height = image.size
@@ -23,7 +23,7 @@ def gatherBlackPoints(image):
 def closestToGroup(group, points):
     """ returns index of 'g' in group and index of 'p' in points that are closet to each other
     """
- 
+
     # really doesn't make sense to call this with empty lists
     if len(group) == 0 and len(points) == 0:
         return -1
@@ -108,7 +108,7 @@ def drawBlock(size):
         cmdUp(size)
         cmdRight(1)
 
-def drawLowRes(image, pixelSize=15):
+def drawLowRes(image, pixelSize=10):
     """ Given a bitmap treat each pixel as a pixelSize x pixelSize unit on the etch-a-sketch
     """
     pixels = image.load()
@@ -120,11 +120,15 @@ def drawLowRes(image, pixelSize=15):
             else:
                 cmdRight(pixelSize)
         cmdLeft(width * pixelSize)
+        cmdLeft(2) # padding since we are traveling such a long distance
+        cmdDown(pixelSize)
 
 ### end draw low res bitmap
 
 def main():
-    pass
+    image = Image.open("b.png")
+    drawLowRes(image)
+
     # image = Image.open("solid_test_bw.png")
     # points = gatherBlackPoints(image)
     # orderedPoints = orderPoints(points)
