@@ -1,10 +1,10 @@
 from PIL import Image
 
 def main():
-    image = Image.open("p.jpg")
-    image.thumbnail((40,20), Image.ANTIALIAS)
+    image = Image.open("Mona_Lisa.jpg")
     image.convert("1")
-    image.save("p_out.png")
+    image.thumbnail((40,80), Image.ANTIALIAS)
+    image.save("mona_out2.png")
 
 if __name__ == "__main__":
     main()
