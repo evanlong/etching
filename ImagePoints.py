@@ -1,5 +1,6 @@
 from PIL import Image
 import math
+import sys
 import heapq
 from collections import deque
 from control import *
@@ -368,7 +369,7 @@ def drawLowRes(image, pixelSize=5):
 ### end draw low res bitmap
 
 def main():
-    image = Image.open("solid2.png")
+    image = Image.open(sys.argv[1])
     drawSolid(image)
 
     # image = Image.open("mona_out.png")
