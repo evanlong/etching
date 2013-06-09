@@ -12,7 +12,7 @@ time.sleep(1)
 
 def distance(p1, p2):
     x = abs(p1[0] - p2[0])
-    y = abs(p1[1] - p2[1])    
+    y = abs(p1[1] - p2[1])
     return math.sqrt(x*x + y*y)
 
 def findPointForDist(points, dist):

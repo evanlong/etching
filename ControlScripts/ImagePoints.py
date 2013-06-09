@@ -3,7 +3,39 @@ import math
 import sys
 import heapq
 from collections import deque
-from control import *
+import control
+
+cmdRight = None
+cmdLeft = None
+cmdDown = None
+cmdUp = None
+
+SHOULD_LOG_CMD_TO_CONSOLE = False
+SHOULD_SKIP_DEVICE_CMD = False
+def setupDeviceProxy():
+    global cmdRight
+    global cmdLeft
+    global cmdDown
+    global cmdUp
+    global SHOULD_SKIP_DEVICE_CMD
+    global SHOULD_LOG_CMD_TO_CONSOLE
+    def _tmpCmdRight(d):
+        if SHOULD_LOG_CMD_TO_CONSOLE: print "R %d" % d
+        if not SHOULD_SKIP_DEVICE_CMD: control.cmdRight(d)
+    def _tmpCmdLeft(d):
+        if SHOULD_LOG_CMD_TO_CONSOLE: print "L %d" % d
+        if not SHOULD_SKIP_DEVICE_CMD: control.cmdLeft(d)
+    def _tmpCmdUp(d):
+        if SHOULD_LOG_CMD_TO_CONSOLE: print "U %d" % d
+        if not SHOULD_SKIP_DEVICE_CMD: control.cmdUp(d)
+    def _tmpCmdDown(d):
+        if SHOULD_LOG_CMD_TO_CONSOLE: print "D %d" % d
+        if not SHOULD_SKIP_DEVICE_CMD: control.cmdDown(d)
+    cmdRight = _tmpCmdRight
+    cmdLeft = _tmpCmdLeft
+    cmdUp = _tmpCmdUp
+    cmdDown = _tmpCmdDown
+setupDeviceProxy()
 
 def distance(p1, p2):
     x = abs(p1[0] - p2[0])
@@ -138,9 +170,13 @@ class Line:
         return (self.S,self.E)
 
     def connect(self, line):
-        if line not in self.adjacents:
-            self.adjacents.append(line)
+        if not self.isConnected(line):
+            lineDist = distFromAtoB(self.S, line.S)
+            heapq.heappush(self.adjacents, (lineDist, line))
             line.connect(self)
+
+    def isConnected(self, line):
+        return line in [L[1] for L in self.adjacents]
 
     def containsPoint(self, point):
         Px,Py = point
@@ -299,27 +335,7 @@ def pathFromAtoB(image, A, B):
 def drawSolid(image):
     result = imageToHorizontalLines(image)
 
-    if False:
-
-        import pdb
-        pdb.set_trace()
-
-        return
-
-    if False:
-        import random
-        c1 = random.choice(result)
-        c2 = random.choice(result)
-        S = c1[0]
-        E = c2[1]
-        path = pathFromAtoB(image, S, E)
-        outPixels = image.load()
-        for p in path:
-            outPixels[p[0], p[1]] = (255,0,0)
-        outPixels[S[0],S[1]] = (0,255,0)
-        outPixels[E[0],E[1]] = (0,0,255)
-        image.save("solid_out.png")
-
+    # DFS visiting of adjacent lines
     stack = [result[0]]
     while len(stack) > 0:
         line = stack.pop()
@@ -328,12 +344,16 @@ def drawSolid(image):
         cmdLeft(lineLength(line))
 
         # setup the next set of lines to draw
-        stack.extend(reversed(line.adjacents))
+        tmp = []
+        while len(line.adjacents) > 0:
+            adjacent = heapq.heappop(line.adjacents)[1]
+            tmp.append(adjacent)
+            # remove line from adjacent so it doesn't get queued up again
+            adjacent.adjacents = [x for x in adjacent.adjacents if x[1] != line]
+            heapq.heapify(adjacent.adjacents)
 
-        # remove the line from its adjacents so it doesn't get queued up again
-        for a in line.adjacents:
-            a.adjacents.remove(line)
-        line.adjacents = []
+        # reverse tmp so that we have the closest one on the top of the stack
+        stack.extend(reversed(tmp))
 
         # position draw for next run through the loop
         if len(stack) > 0:
@@ -369,6 +389,10 @@ def drawLowRes(image, pixelSize=5):
 ### end draw low res bitmap
 
 def main():
+    global SHOULD_SKIP_DEVICE_CMD
+    global SHOULD_LOG_CMD_TO_CONSOLE
+    SHOULD_SKIP_DEVICE_CMD = False
+    SHOULD_LOG_CMD_TO_CONSOLE = False
     image = Image.open(sys.argv[1])
     drawSolid(image)
 
