@@ -20,6 +20,7 @@
     
     self.controller = [[LWViewController alloc] init];
     self.window.contentView = self.controller.view;
+    [self.window makeFirstResponder:self.controller];
 }
 
 - (IBAction)open:(id)sender

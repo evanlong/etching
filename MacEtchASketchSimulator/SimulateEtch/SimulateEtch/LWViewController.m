@@ -110,6 +110,7 @@
 - (void)drawRight:(NSInteger)distance;
 - (void)drawUp:(NSInteger)distance;
 - (void)drawDown:(NSInteger)distance;
+- (void)flashCursor;
 
 @property (nonatomic, assign) CGFloat scale;
 @property (nonatomic, strong) LWColorBoxView* cursor;
@@ -129,7 +130,7 @@
     self = [super initWithFrame:frameRect];
     if (self)
     {
-        self.scale = 1.0f;
+        self.scale = 10.0f;
         self.cursor = [[LWColorBoxView alloc] initWithFrame:NSMakeRect(frameRect.size.width/2,
                                                                        frameRect.size.height-20,
                                                                        self.scale,
@@ -150,7 +151,8 @@
     [self.commandQueue addObject:vector];
     
     // only item so start animating
-    if (self.commandQueue.count == 1) {
+    if (self.commandQueue.count == 1)
+    {
         [self _runCursor];
     }
 }
@@ -175,11 +177,31 @@
     [self _draw:distance direction:NSMakePoint(0, -self.scale)];
 }
 
+- (void)flashCursor
+{
+    [NSAnimationContext beginGrouping];
+    {
+        [[NSAnimationContext currentContext] setDuration:.4];
+        
+        CGRect oldBonds = self.cursor.bounds;
+        self.cursor.bounds = NSMakeRect(0, 0, 100, 100);
+        self.cursor.backgroundColor = [NSColor greenColor];
+    
+//        [[NSAnimationContext currentContext] setCompletionHandler:^{
+//            self.cursor.backgroundColor = [NSColor redColor];
+//        }];
+        
+        [[self.cursor animator] setBounds:oldBonds];
+    }
+    [NSAnimationContext endGrouping];
+}
+
 #pragma mark - Private
 
 - (void)_runCursor
 {
-    if (self.commandQueue.count > 0) {
+    if (self.commandQueue.count > 0)
+    {
         LWVector* vector = [self.commandQueue objectAtIndex:0];
         [NSAnimationContext beginGrouping];
         {
@@ -237,6 +259,14 @@
     [self.scrollView.contentView scrollToPoint:NSMakePoint(350,
                                                            self.sketchView.frame.size.height)];
     self.view = self.scrollView;
+}
+
+- (void)keyDown:(NSEvent*)event
+{
+    if (event.keyCode == 49) // space
+    {
+        [self.sketchView flashCursor];
+    }
 }
 
 - (void)simulateEtchASketch:(NSString*)data
