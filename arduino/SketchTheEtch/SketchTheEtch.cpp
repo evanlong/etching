@@ -1,5 +1,4 @@
 #include "Arduino.h"
-#include "LocalLibrary.h"
 
 void setup() {
     for (int i = 4; i <= 11; i++) {
@@ -93,33 +92,6 @@ void driveMotor(const int order[], int speed) {
             highIdx = highIdx % PIN_COUNT;
             delay(pause);
         }
-//        digitalWrite(order[0], HIGH); // 0
-//        delay(pause);
-//        digitalWrite(order[0], HIGH); // 1
-//        digitalWrite(order[1], HIGH);
-//        delay(pause);
-//        digitalWrite(order[0], LOW);
-//        digitalWrite(order[1], HIGH); // 2
-//        delay(pause);
-//        digitalWrite(order[1], HIGH); // 3
-//        digitalWrite(order[2], HIGH);
-//        delay(pause);
-//        digitalWrite(order[1], LOW);
-//        digitalWrite(order[2], HIGH); // 4
-//        delay(pause);
-//        digitalWrite(order[2], HIGH); // 5
-//        digitalWrite(order[3], HIGH);
-//        delay(pause);
-//        digitalWrite(order[2], LOW);
-//        digitalWrite(order[3], HIGH); // 6
-//        delay(pause);
-//        digitalWrite(order[3], HIGH); // 7
-//        digitalWrite(order[0], HIGH);
-//        delay(pause);
-//        digitalWrite(order[3], LOW);
-//        digitalWrite(order[0], HIGH); // 8
-//        delay(pause);
-//        digitalWrite(order[0], LOW); // 9
     }
 }
 
