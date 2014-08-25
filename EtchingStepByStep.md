@@ -6,11 +6,11 @@ Once completed the Etch-a-Sketch should be able to draw arbitrary black and whit
 ## Getting Started
 
 Start by making sure you have all the parts listed here:
-(parts list).
+
 1. 1x [Etch-a-Sketch](http://www.amazon.com/Classic-Etch-Sketch-Magic-Screen/dp/B00000J0HG/)
 2. 1x [Arduino UNO](http://www.adafruit.com/products/50)
 3. 2x [Stepper Motors](https://www.adafruit.com/products/918)
-4. 1x 12V Power Supply for stepper motors. (Old PC power supply works great for this)
+4. 1x 12V Power Supply for stepper motors. An old PC power supply works perfectly for this.
 5. 1x [ULN2803](http://www.digikey.com/product-detail/en/ULN2803A/497-2356-5-ND/599591)
 6. 1x [Breadboard](http://www.adafruit.com/products/64)
 7. 1x Foot of rubber tubing. It should have a 3/16in inner diameter and outer diameter of about 5/16in.
@@ -32,7 +32,7 @@ Start by making sure you have all the parts listed here:
 
 ![schematic](/schematic.jpg)
 
-We use the ULN2803 to get 12V to drive the motors. Make sure to connect the 12V power supply to COM and GND.
+The digital out pins on the Arduino do not provide enough voltage for the stepper motors. We use the ULN2803 to switch up to the 12V required by the motors. Ensure the 12V power supply is connected to COM (positive) and GND (negative).
 
 Once everything is wired up it should look something like this:
 ![all wired up](/wiredup.jpg)
@@ -40,7 +40,7 @@ Once everything is wired up it should look something like this:
 ## Software
 
 1. First checkout all the source code
-2. Next use the [Arduino Software](http://arduino.cc/en/Main/Software) to build and install the [SketchTheEtch.cpp](http://blah/arduino/SketchTheEtch/SketchTheEtch.cpp) on your device.
+2. Next use the [Arduino Software](http://arduino.cc/en/Main/Software) to build and install the [SketchTheEtch.cpp](http://blah/arduino/SketchTheEtch/SketchTheEtch.cpp) on the Arduino.
 3. Make sure the following python depedencies are install: Pillow (a PIL replacement) and pyserial. Both can be installed with pip:
 
 		pip install pyserial
