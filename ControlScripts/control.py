@@ -7,7 +7,16 @@ import math
 import time
 import logging
 
-ser=serial.Serial("/dev/tty.usbmodem641", 9600, timeout=None)
+pathToUsb = ''
+if __name__ == "__main__":
+    if len(sys.argv) < 2:
+        print 'python %s "/dev/tty.usbmodem123"' % (sys.argv[0])
+        sys.exit(1)
+    pathToUsb = sys.argv[1]
+else:
+    pathToUsb = "/dev/tty.usbmodem1451"
+
+ser=serial.Serial(pathToUsb, 9600, timeout=None)
 time.sleep(1)
 
 def distance(p1, p2):
@@ -184,8 +193,7 @@ if __name__ == "__main__":
         elif len(result) == 2:
             direction = result[0]
             steps = result[1]
-            if len(direction) == 1 and direction in ['d','u','l','r','q','x'] \
-                    and steps.isdigit():
+            if len(direction) == 1 and direction in ['d','u','l','r','q','x'] and steps.isdigit():
                 if direction in ["q", "x"]: # commands
                     cmd(direction, wireInt(steps))
                 else: # directions
