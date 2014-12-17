@@ -130,7 +130,7 @@
     self = [super initWithFrame:frameRect];
     if (self)
     {
-        self.scale = 10.0f;
+        self.scale = 2.0;
         self.cursor = [[LWColorBoxView alloc] initWithFrame:NSMakeRect(frameRect.size.width/2,
                                                                        frameRect.size.height-20,
                                                                        self.scale,
@@ -181,15 +181,15 @@
 {
     [NSAnimationContext beginGrouping];
     {
-        [[NSAnimationContext currentContext] setDuration:.4];
+        [[NSAnimationContext currentContext] setDuration:.8];
         
         CGRect oldBonds = self.cursor.bounds;
         self.cursor.bounds = NSMakeRect(0, 0, 100, 100);
         self.cursor.backgroundColor = [NSColor greenColor];
     
-//        [[NSAnimationContext currentContext] setCompletionHandler:^{
-//            self.cursor.backgroundColor = [NSColor redColor];
-//        }];
+        [[NSAnimationContext currentContext] setCompletionHandler:^{
+            self.cursor.backgroundColor = [NSColor redColor];
+        }];
         
         [[self.cursor animator] setBounds:oldBonds];
     }
@@ -210,7 +210,7 @@
                 [self _runCursor];
             }];
 
-            [[NSAnimationContext currentContext] setDuration:vector.distance/400.0];
+            [[NSAnimationContext currentContext] setDuration:vector.distance/1600.0];
             
             NSRect startFrame = self.cursor.frame;
             NSRect finalFrame = startFrame;
@@ -253,7 +253,7 @@
     self.scrollView.hasVerticalScroller = YES;
     self.scrollView.backgroundColor = [NSColor darkGrayColor];
     
-    self.sketchView = [[LWSketchView alloc] initWithFrame:NSMakeRect(0, 0, 1500, 1500)];
+    self.sketchView = [[LWSketchView alloc] initWithFrame:NSMakeRect(0, 0, 2000, 2000)];
     self.sketchView.backgroundColor = [NSColor blackColor];
     self.scrollView.documentView = self.sketchView;
     [self.scrollView.contentView scrollToPoint:NSMakePoint(350,

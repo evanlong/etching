@@ -30,7 +30,7 @@ Start by making sure you have all the parts listed here:
 
 ## Wiring
 
-![schematic](/schematic.jpg)
+![schematic](/schematic.jpg)]
 
 The digital out pins on the Arduino do not provide enough voltage for the stepper motors. We use the ULN2803 to switch up to the 12V required by the motors. Ensure the 12V power supply is connected to COM (positive) and GND (negative).
 
@@ -49,11 +49,12 @@ Once everything is wired up it should look something like this:
 4. Now run `python ControlScripts/control.py /dev/tty.PathToUsbDevice`. The `/dev/tty.PathToUsbDevice` will be the same path selected in the Arduino software. This script is used for positioning and testing the device. Here is a basic set of commands that can be issued at the prompt:
 
 		d,c> d 40 #drives the head down 40 pixels
-		d,c> r 20 #drives the head down 40 pixels
+		d,c> r 20 #drives the head right 40 pixels
 		d, u, l, r can all be used followed by an integer indicating the number of points to drive
 		
 		d,c> s #powers down the coils in the motors
 		
 		d,c> vtest #draws a series of shrinking circles
 		
-The Arduino Firmware works by receiving a vector to draw. It then draws that vector and sends a message back the the python script indicating it is ready for the next command. The `Image
+The Arduino Firmware works by receiving a vector to draw. It then draws that vector and sends a message back the the python script indicating it is ready for the next command. The `ImagePoints.py` 
+

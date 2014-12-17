@@ -14,7 +14,7 @@ if __name__ == "__main__":
         sys.exit(1)
     pathToUsb = sys.argv[1]
 else:
-    pathToUsb = "/dev/tty.usbmodem1451"
+    pathToUsb = "/dev/tty.usbmodem1411"
 
 ser=serial.Serial(pathToUsb, 9600, timeout=None)
 time.sleep(1)
