@@ -115,6 +115,9 @@ def _dumbCmdVector(d1,s1,d2,s2):
 PREV_HOR_DIR = CMD_RIGHT
 PREV_VER_DIR = CMD_DOWN
 def cmdVector(d1,s1,d2,s2):
+    """ Tracks the previous direction of the motor. If the direction has changed then it
+        will drive it 10 points extra to compensate for tension in the Etch-a-Sketch.
+    """
     global PREV_HOR_DIR
     global PREV_VER_DIR
     dirs = sorted( [[d1,s1], [d2,s2]] )
@@ -143,45 +146,15 @@ def cmdUp(d):
 def cmdDown(d):
     cmdVector(CMD_LEFT, 0, CMD_DOWN, d)
 
-def cursesSetup():
-    stdscr = curses.initscr()
-    curses.noecho()
-    curses.cbreak()
-    stdscr.keypad(1)
-    while 1:
-        c = stdscr.getch()
-        if c == ord('q'):
-            break
-        elif c == curses.KEY_LEFT:
-            work("l", 1)
-        elif c == curses.KEY_RIGHT:
-            work("r", 1)
-        elif c == curses.KEY_UP:
-            work("u", 1)
-        elif c == curses.KEY_DOWN:
-            work("d", 1)
-    curses.nocbreak()
-    stdscr.keypad(0)
-    curses.echo()
-    curses.endwin()
+def cmdStop():
+    ser.write('s')
 
 if __name__ == "__main__":
     while True:
-        data = raw_input("d,c> ")
+        data = raw_input("> ")
         result = data.split(" ")
-        if data == "screen":
-            cursesSetup()
-            continue
-        elif data == "circle":
-            for i in range(180):
-                cmdBytePair(CMD_RIGHT, 200)
-                vertical = math.sin(math.radians(i))
-                if vertical < 0:
-                    vertical = abs(vertical)
-                    cmdBytePair(CMD_DOWN, vertical)
-                else:
-                    cmdBytePair(CMD_UP, vertical)
-            continue
+        if data == "help":
+            printHelp()
         elif data == "vtest":
             points = []
             for offset in range(50):
@@ -200,7 +173,6 @@ if __name__ == "__main__":
                     if direction in DIR_TO_INDEX:
                         idx = DIR_TO_INDEX.index(direction)
                         cmdVector(idx, int(steps), (idx+2)%len(DIR_TO_INDEX), 0)
-                continue
         elif len(result) == 1:
             good = True
             for c in result[0]:
@@ -208,5 +180,5 @@ if __name__ == "__main__":
                     good = False
             if good:
                 ser.write(result[0])
-                continue
-        print "invalid input"
+        else:
+            print "invalid input"

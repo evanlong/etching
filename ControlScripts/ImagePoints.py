@@ -361,59 +361,21 @@ def drawSolid(image):
             path = pathFromAtoB(image, line.S, last.S)
             drawCmdsFromPath(path)
 
+    control.cmdStop()
+
 ### end solid drawing
 
-### begin draw low res bitmap
-
-def drawBlock(size):
-    for x in range(size):
-        cmdDown(size)
-        cmdUp(size)
-        cmdRight(1)
-
-def drawLowRes(image, pixelSize=5):
-    """ Given a bitmap treat each pixel as a pixelSize x pixelSize unit on the etch-a-sketch
-    """
-    pixels = image.load()
-    width, height = image.size
-    for y in range(height):
-        for x in range(width):
-            if isBlack(pixels[x,y]):
-                drawBlock(pixelSize)
-            else:
-                cmdRight(pixelSize)
-        cmdLeft(width * pixelSize)
-        cmdLeft(2) # padding since we are traveling such a long distance
-        cmdDown(pixelSize)
-
-### end draw low res bitmap
-
 def main():
+    # TODO: cmd line arguments to tweak these paramters?
+    # One to draw on device and the other to log
+    # Another to read the output.txt in and draw it?
+    # Switch to a concept of Image => Commands => Device
     global SHOULD_SKIP_DEVICE_CMD
     global SHOULD_LOG_CMD_TO_CONSOLE
     SHOULD_SKIP_DEVICE_CMD = False
     SHOULD_LOG_CMD_TO_CONSOLE = False
     image = Image.open(sys.argv[1])
     drawSolid(image)
-
-    # image = Image.open("mona_out.png")
-    # drawLowRes(image)
-
-    # image = Image.open("solid_test_bw.png")
-    # points = gatherBlackPoints(image)
-    # orderedPoints = orderPoints(points)
-
-    # print points
-    # print "====="
-    # print orderedPoints
-
-    # image = Image.open("a.png")
-    # points = gatherBlackPoints(image)
-    # outImage = Image.new("RGBA", image.size)
-    # pixels = outImage.load()
-    # for p in points:
-    #     pixels[p[0],p[1]] = (0,0,0)
-    # outImage.save("b.png")
 
 if __name__ == "__main__":
     main()

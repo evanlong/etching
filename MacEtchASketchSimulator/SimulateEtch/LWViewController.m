@@ -130,7 +130,7 @@
     self = [super initWithFrame:frameRect];
     if (self)
     {
-        self.scale = 2.0;
+        self.scale = 1.0;
         self.cursor = [[LWColorBoxView alloc] initWithFrame:NSMakeRect(frameRect.size.width/2,
                                                                        frameRect.size.height-20,
                                                                        self.scale,
