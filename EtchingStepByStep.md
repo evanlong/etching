@@ -81,11 +81,9 @@ The initial position of the head must be done manaully. For `mona.png` the top c
 
 ### Custom Images
 
-The maximum resolution is about 550x370. However, I recommend images no larger than 500x320 to account for any error that will accumulate.
+The maximum resolution is about 550x370. However, I recommend images no larger than 500x320 to account for any error.
 
-Tracing starts from the top of the image and works its way from left-to-right. The best initial position corresponds to the left most pixel in the first row of black pixels and its position relative to the rest of the image. The following samples illustrate the initial position with a yellow square:
-
-![Left](/ref/Position1.png) ![Right](/ref/Position2.png) ![Center](/ref/Position3.png)
+Tracing starts from the top of the image and works its way from left-to-right. The best initial position corresponds to the left most pixel in the first row of black pixels and its position relative to the rest of the image. The following samples illustrate the best initial position with a yellow square: <p class="position-images">![Left](Schematics/Images/Position1.png) ![Right](Schematics/Images/Position2.png) ![Center](Schematics/Images/Position3.png)</p>
 
 ### Known Issues
 

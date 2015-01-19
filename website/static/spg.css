@@ -42,9 +42,9 @@ body {
   margin-bottom: 20px;
   line-height: 1.2;
 }
-/*ol li, ul li {
-  margin-bottom: 2px;
-}*/
+.position-images img {
+  padding-bottom: 10px;
+}
 ul,ol{
   margin:0 0 10px 0;
 }
