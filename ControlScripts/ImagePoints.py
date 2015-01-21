@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 from PIL import Image
 import math
 import sys
@@ -9,33 +11,48 @@ cmdRight = None
 cmdLeft = None
 cmdDown = None
 cmdUp = None
+cmdStop = None
 
-SHOULD_LOG_CMD_TO_CONSOLE = False
-SHOULD_SKIP_DEVICE_CMD = False
-def setupDeviceProxy():
+def setupDeviceProxy(devicePath):
+    control.setup(devicePath)
+
     global cmdRight
     global cmdLeft
     global cmdDown
     global cmdUp
-    global SHOULD_SKIP_DEVICE_CMD
-    global SHOULD_LOG_CMD_TO_CONSOLE
+    global cmdStop
+
+    shouldLogToConsole = (devicePath == None)
+
     def _tmpCmdRight(d):
-        if SHOULD_LOG_CMD_TO_CONSOLE: print "R %d" % d
-        if not SHOULD_SKIP_DEVICE_CMD: control.cmdRight(d)
+        if shouldLogToConsole:
+            print "R %d" % d
+        else:
+            control.cmdRight(d)
     def _tmpCmdLeft(d):
-        if SHOULD_LOG_CMD_TO_CONSOLE: print "L %d" % d
-        if not SHOULD_SKIP_DEVICE_CMD: control.cmdLeft(d)
+        if shouldLogToConsole:
+            print "L %d" % d
+        else:
+            control.cmdLeft(d)
     def _tmpCmdUp(d):
-        if SHOULD_LOG_CMD_TO_CONSOLE: print "U %d" % d
-        if not SHOULD_SKIP_DEVICE_CMD: control.cmdUp(d)
+        if shouldLogToConsole:
+            print "U %d" % d
+        else:
+            control.cmdUp(d)
     def _tmpCmdDown(d):
-        if SHOULD_LOG_CMD_TO_CONSOLE: print "D %d" % d
-        if not SHOULD_SKIP_DEVICE_CMD: control.cmdDown(d)
+        if shouldLogToConsole:
+            print "D %d" % d
+        else:
+            control.cmdDown(d)
+    def _tmpCmdStop():
+        if not shouldLogToConsole:
+            control.cmdStop()
+
     cmdRight = _tmpCmdRight
     cmdLeft = _tmpCmdLeft
     cmdUp = _tmpCmdUp
     cmdDown = _tmpCmdDown
-setupDeviceProxy()
+    cmdStop = _tmpCmdStop
 
 def distance(p1, p2):
     x = abs(p1[0] - p2[0])
@@ -361,20 +378,20 @@ def drawSolid(image):
             path = pathFromAtoB(image, line.S, last.S)
             drawCmdsFromPath(path)
 
-    control.cmdStop()
+    cmdStop()
 
 ### end solid drawing
 
 def main():
-    # TODO: cmd line arguments to tweak these paramters?
-    # One to draw on device and the other to log
-    # Another to read the output.txt in and draw it?
-    # Switch to a concept of Image => Commands => Device
-    global SHOULD_SKIP_DEVICE_CMD
-    global SHOULD_LOG_CMD_TO_CONSOLE
-    SHOULD_SKIP_DEVICE_CMD = False
-    SHOULD_LOG_CMD_TO_CONSOLE = False
-    image = Image.open(sys.argv[1])
+    import argparse
+    parser = argparse.ArgumentParser(description='Draws a black and white image on the Etch-a-Sketch')
+    parser.add_argument("image", metavar="IMAGE",type=str, help="Path to an image file")
+    parser.add_argument("--device", help="Path to Arduino such as /dev/tty.usbmodem1411. If DEVICE is not specified drawing commands will be logged to stdout.", type=str)
+    args = parser.parse_args()
+
+    setupDeviceProxy(args.device)
+
+    image = Image.open(args.image)
     drawSolid(image)
 
 if __name__ == "__main__":

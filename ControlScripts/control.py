@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import serial
 import readline
 import signal
@@ -7,17 +9,19 @@ import math
 import time
 import logging
 
-pathToUsb = ''
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print 'python %s "/dev/tty.usbmodem123"' % (sys.argv[0])
-        sys.exit(1)
-    pathToUsb = sys.argv[1]
-else:
-    pathToUsb = "/dev/tty.usbmodem1411"
+# pathToUsb = ''
+# if __name__ == "__main__":
+#     if len(sys.argv) < 2:
+#         print 'python %s "/dev/tty.usbmodem123"' % (sys.argv[0])
+#         sys.exit(1)
+#     pathToUsb = sys.argv[1]
+# else:
+#     pathToUsb = "/dev/tty.usbmodem1411"
 
-ser=serial.Serial(pathToUsb, 9600, timeout=None)
-time.sleep(1)
+ser = None
+def setup(pathToUsb):
+    ser=serial.Serial(pathToUsb, 9600, timeout=None)
+    time.sleep(1)
 
 def distance(p1, p2):
     x = abs(p1[0] - p2[0])
@@ -78,7 +82,7 @@ DIR_TO_INDEX = ['r','l','u','d']
 def cmdBytePair(a,b):
     ser.write(wireInt(a))
     ser.write(wireInt(b))
-    
+
 def wireInt(i):
     return chr(int(i))
 
@@ -149,7 +153,14 @@ def cmdDown(d):
 def cmdStop():
     ser.write('s')
 
-if __name__ == "__main__":
+def main():
+    import argparse
+    parser = argparse.ArgumentParser(description='Draws a black and white image on the Etch-a-Sketch')
+    parser.add_argument("device", metavar="DEVICE", help="Path to Arduino such as /dev/tty.usbmodem1411", type=str)
+    args = parser.parse_args()
+
+    setup(args.device)
+
     while True:
         data = raw_input("> ")
         result = data.split(" ")
@@ -182,3 +193,6 @@ if __name__ == "__main__":
                 ser.write(result[0])
         else:
             print "invalid input"
+
+if __name__ == "__main__":
+    main()

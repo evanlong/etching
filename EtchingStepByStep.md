@@ -61,7 +61,11 @@ Once everything is wired up it should look something like this:
 		pip install pyserial
 		pip install Pillow
 
-4. From the checked out repo run `python ControlScripts/control.py /dev/tty.PathToUsbDevice`. The `/dev/tty.PathToUsbDevice` will be the same path selected in the Arduino software. This script is used for positioning and testing the device. Here is a basic set of commands that can be issued at the prompt:
+4. From the source repo run:
+
+		python ControlScripts/control.py /dev/tty.PathToUsbDevice
+
+	The device path (`/dev/tty.PathToUsbDevice`) will be the same as the one selected in the Arduino software. This script is used for positioning and testing the device. Here is a basic set of commands that can be issued at the prompt:
 
 		d,c> d 40 #drives the head down 40 pixels
 		d,c> r 20 #drives the head right 40 pixels
@@ -75,9 +79,16 @@ The Arduino Firmware works by receiving a vector to draw. It draws the vector an
 
 As an example we can trace the Mona Lisa:
 
-	python ControlScripts/ImagePoints.py SamplesAssets/mona.png
+	python ControlScripts/ImagePoints.py --device /dev/tty.PathToUsbDevice SamplesAssets/mona.png
 
-The initial position of the head must be done manaully. For `mona.png` the top center of the Etch-a-Sketch will work just fine.
+The initial position of the head must be done manually. For `mona.png` the top center of the Etch-a-Sketch will work just fine.
+
+It is also possible to save the drawing commands to a file and simulate the result in another program:
+
+	# Commands are logged to stdout when the --device option is not passed
+	python ControlScripts/ImagePoints.py SamplesAssets/mona.png > OutputCommands.txt
+
+The output is vectors with a distance. The source repo includes a simple Mac app in `MacEtchASketchSimulator` to simulate the drawing commands. It can be built and run with Xcode. Once it is running open the file with the saved drawing commands: `OutputCommands.txt`.
 
 ### Custom Images
 
@@ -85,34 +96,23 @@ The maximum resolution is about 550x370. However, I recommend images no larger t
 
 Tracing starts from the top of the image and works its way from left-to-right. The best initial position corresponds to the left most pixel in the first row of black pixels and its position relative to the rest of the image. The following samples illustrate the best initial position with a yellow square: <p class="position-images">![Left](Schematics/Images/Position1.png) ![Right](Schematics/Images/Position2.png) ![Center](Schematics/Images/Position3.png)</p>
 
+Turning any image into something that can be draw on the Etch-a-Sketch is a whole project of its own.
+
+In addition to a standard image editor python has plenty of...
+	
+	pip install numpy
+	pip install scikit-image
+	pip install scipy
+	pip install matplotlib
+
 ### Known Issues
 
-- Driving in one direction too long causes some error in the sense the line isn't as long as it should be. This can be by driving in one direction a shorter distance < 50 points ideally
-- Motor mounts move a bit too much when motors change direction. This certainly contributes to some error but hasn't been a huge issue for me. This requires a hardware change such as:
-	+ Fixing the motors else where and using a belt to drive the knobs
-	+ Fixing the motors mounts to each other so there isn't as much movement
-- Image analysis to suggest where to initally position the head or always assume the head is positioned in the upper left
-- 
+- Driving in one direction too long causes some error in the sense the line isn't as long as it should be. Ideally most line segments are less than 75 pixels.
+- Motor mounts move a bit too much when motors change direction. This certainly contributes to some error but hasn't been a huge issue for me. This requires a hardware change such as fixing the motors outside and using a belt or gear to drive the knobs.
+- Image analysis to suggest where to initally position the head or always assume the head is positioned in the upper left.
 
 ### Contact
 
 Feel free to contact me with any questions <annglove+etch@gmail.com>
-
-### Notes to self
-
-- Args to the script (both control.py and ImagePoints.py)
-- position in the upper left then draw a single line to the position that will correctly fit the image on the screen
-- consider rotating lines into squares to that we don't run the motors a long time in one direction. Given a stack of lines prefer the shorter lines distance
-- slice sections of the timage into 50x50 sections to draw. Complete the section before moving on...
-- Brushes in Acorn/Photoshop to create a shading effect
-
-
-For image processing and canny edge detection
-	
-	numpy
-	scikit-image
-	scipy
-	matplotlib
-
 
 
