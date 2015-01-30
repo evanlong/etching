@@ -4,8 +4,6 @@ This automated Etch-a-Sketch can draw simple black and white images like the the
 
 <iframe class="video" src="//player.vimeo.com/video/114496052" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
 
-<!-- ![Result Mona](Schematics/Images/ResultMona.png) -->
-
 ### Parts List
 
 1. 1x [Etch-a-Sketch](http://www.amazon.com/Classic-Etch-Sketch-Magic-Screen/dp/B00000J0HG/)
