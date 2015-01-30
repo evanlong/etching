@@ -51,6 +51,10 @@ ul,ol{
 h2,h3,h4 {
   margin-bottom: 10px;
 }
+.video {
+  width: 500px;
+  height: 281px;
+}
 @media (max-width: 767px) {
   .sidebar {
     margin-bottom: 10px;
@@ -65,5 +69,17 @@ h2,h3,h4 {
   }
   .header {
     margin-bottom: 0px;
+  }
+}
+@media (max-width: 520px) {
+  .video {
+    width: 400px;
+    height: 224px;
+  }
+}
+@media (max-width: 400px) {
+  .video {
+    width: 290px;
+    height: 163px;
   }
 }

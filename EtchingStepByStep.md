@@ -2,7 +2,9 @@
 
 This automated Etch-a-Sketch can draw simple black and white images like the the Mona Lisa:
 
-![Result Mona](Schematics/Images/ResultMona.png)
+<iframe class="video" src="//player.vimeo.com/video/114496052" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+<!-- ![Result Mona](Schematics/Images/ResultMona.png) -->
 
 ### Parts List
 
@@ -96,20 +98,31 @@ The maximum resolution is about 550x370. However, I recommend images no larger t
 
 Tracing starts from the top of the image and works its way from left-to-right. The best initial position corresponds to the left most pixel in the first row of black pixels and its position relative to the rest of the image. The following samples illustrate the best initial position with a yellow square: <p class="position-images">![Left](Schematics/Images/Position1.png) ![Right](Schematics/Images/Position2.png) ![Center](Schematics/Images/Position3.png)</p>
 
-Turning any image into something that can be draw on the Etch-a-Sketch is a whole project of its own.
+This project does not provide a filter for converting any arbitrary image into something can be drawn on the Etch-a-Sketch. There are a couple of scripts that will help process images into a more drawable form but hand editing may still be required.
 
-In addition to a standard image editor python has plenty of...
-	
+The first script is `ImageScripts/Darken.py` and can be used like this:
+
+	ImageScripts/Darken.py /path/to/image.png /output/image.png
+
+The result is an image of only black or white pixels.
+
+The next script, `ImageScripts/Edges.py` depends on the following python libraries:
+
 	pip install numpy
 	pip install scikit-image
 	pip install scipy
 	pip install matplotlib
 
+Once these are installed, `ImageScripts/Edges.py` takes a single image as input:
+
+	ImageScripts/Edges.py /path/to/image.png
+
+The result is a matplotlib window with various edge detection algorithms applied to the input image.
+
 ### Known Issues
 
-- Driving in one direction too long causes some error in the sense the line isn't as long as it should be. Ideally most line segments are less than 75 pixels.
-- Motor mounts move a bit too much when motors change direction. This certainly contributes to some error but hasn't been a huge issue for me. This requires a hardware change such as fixing the motors outside and using a belt or gear to drive the knobs.
-- Image analysis to suggest where to initally position the head or always assume the head is positioned in the upper left.
+- Driving in one direction for a distance larger than about 75 pixels causes some error. The line won't be long enough typically.
+- The motor mounts are not incredibly secure. However, the amount of error this contributes doesn't seem to be too much.
 
 ### Contact
 
