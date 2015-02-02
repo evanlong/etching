@@ -54,7 +54,7 @@ Once everything is wired up it should look something like this:
 
 ### Software
 
-1. First checkout all the source code from bitbucket.
+1. Checkout the source from <a href="https://github.com/evanlong/etching" target="_blank">github</a>.
 2. Next use the [Arduino Software](http://arduino.cc/en/Main/Software) to build and install the [SketchTheEtch.cpp](http://blah/arduino/SketchTheEtch/SketchTheEtch.cpp) on the Arduino.
 3. Install the following python dependencies Pillow (a PIL replacement) and pyserial. Both can be installed with pip:
 
@@ -96,7 +96,7 @@ The maximum resolution is about 550x370. However, I recommend images no larger t
 
 Tracing starts from the top of the image and works its way from left-to-right. The best initial position corresponds to the left most pixel in the first row of black pixels and its position relative to the rest of the image. The following samples illustrate the best initial position with a yellow square: <p class="position-images">![Left](Schematics/Images/Position1.png) ![Right](Schematics/Images/Position2.png) ![Center](Schematics/Images/Position3.png)</p>
 
-This project does not provide a filter for converting any arbitrary image into something can be drawn on the Etch-a-Sketch. There are a couple of scripts that will help process images into a more drawable form but hand editing may still be required.
+This project does not provide filters for converting any arbitrary image into something that can be drawn on the Etch-a-Sketch. There are a couple of scripts that will help process images into a more drawable form but images may require some editing by hand:
 
 The first script is `ImageScripts/Darken.py` and can be used like this:
 
@@ -124,6 +124,4 @@ The result is a matplotlib window with various edge detection algorithms applied
 
 ### Contact
 
-Feel free to contact me with any questions <annglove+etch@gmail.com>
-
-
+Feel free to contact me with any questions: annglove@gmail.com
