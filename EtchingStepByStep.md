@@ -124,4 +124,4 @@ The result is a matplotlib window with various edge detection algorithms applied
 
 ### Contact
 
-Feel free to contact me with any questions: annglove@gmail.com
+Feel free to contact me with any questions: <annglove@gmail.com>
