@@ -20,12 +20,12 @@ This automated Etch-a-Sketch can draw simple black and white images like the the
 
 ### Mounting Motors
 
-1. Start by removing the white nobs from the Etch-a-Sketch. A flathead screwdriver can pry them off: <p>![Nob Removal](Schematics/Images/motor_1.jpg)</p>
-2. Place the motor mounts on the Etch-a-Sketch: <p>![Nob Removal](Schematics/Images/motor_2.jpg)</p>
+1. Start by removing the white knobs from the Etch-a-Sketch. A flathead screwdriver can pry them off: <p>![Knob Removal](Schematics/Images/motor_1.jpg)</p>
+2. Place the motor mounts on the Etch-a-Sketch: <p>![Knob Removal](Schematics/Images/motor_2.jpg)</p>
 3. Now place the motors on the mounts with the wires directed towards the screen. The mount's poles may need to be sanded down to fit the motor: <p>![Mount](Schematics/Images/motor_3.jpg)</p>
-4. Next cutut off two pieces of rubber tubing. Each piece should be 17 mm long: <p>![Tubing](Schematics/Images/motor_4.jpg)</p>
+4. Next cut off two pieces of rubber tubing. Each piece should be 17 mm long: <p>![Tubing](Schematics/Images/motor_4.jpg)</p>
 5. Put Gorilla Glue on the motor shaft and slide the tubing over the shaft. Use a small zip tie to ensure a tight fit between the tubing and motor. Let the glue dry for about 5 minutes. Once the glue has set twist the motor shaft back and forth a few times to break any glue that might prevent the motor from turning: <p>![Glue](Schematics/Images/motor_5.jpg)</p>
-6. Place the motor back on the mount. The tubing should slide over the nob and connect the motor shaft with the nob. Use another zip tie to ensure a tight fit with the tubing and the nob: <p>![Final](Schematics/Images/motor_6.jpg)</p>
+6. Place the motor back on the mount. The tubing should slide over the knob and connect the motor shaft with the knob. Use another zip tie to ensure a tight fit with the tubing and the knob: <p>![Final](Schematics/Images/motor_6.jpg)</p>
 
 ### Wiring
 
