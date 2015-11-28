@@ -3,20 +3,23 @@ pre {
     overflow: auto;
     word-wrap: normal;
 }
+.codehilite {
+  margin-bottom: 14px;
+}
 a {
   color: #0090ff;
 }
 p {
-  font-family: Verdana,Sans,Arial;
-  font-size: 12pt;
-  margin-bottom: 15px;
+  font-family: inherit;
+  font-size: inherit;
+  margin-bottom: 14px;
 }
 li,p {
   line-height: 1.4em;
 }
 body {
-  font-family: Verdana,Sans,Arial;
-  font-size: 12pt;
+  font-family: "Source Sans Pro",Verdana,Sans,Arial;;
+  font-size: 14pt;
   margin-bottom: 30px;
 }
 .header {
@@ -24,12 +27,11 @@ body {
   font-size: 32pt;
   font-weight: bold;
   margin-top: 20px;
-  margin-bottom: 20px;
   text-align: center;
   line-height: 100%;
 }
 .sidebar {
-  font-family: Verdana,Sans,Arial;
+  font-family: inherit;
   font-size: 14pt;
   padding-top: 20px;
 }
@@ -46,10 +48,12 @@ body {
   padding-bottom: 5px;
 }
 ul,ol{
-  margin:0 0 10px 0;
+  margin:0 0 15px 0;
 }
-h2,h3,h4 {
-  margin-bottom: 10px;
+h1,h2,h3,h4,h5 {
+  font-family: "Courier New", Courier, Mono;
+  margin-top: 20px;
+  margin-bottom: 12px;
 }
 .video {
   width: 500px;
@@ -57,7 +61,7 @@ h2,h3,h4 {
 }
 @media (max-width: 767px) {
   .sidebar {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
     padding-bottom: 10px;
     text-align: center;
   }
